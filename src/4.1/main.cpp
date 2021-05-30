@@ -8,6 +8,7 @@ struct GraphNode
 {
   int value;
   std::vector<GraphNode*> neighbors;
+  bool visited = false;
 };
 
 // Determine if path from A -> B exists in graph.
@@ -22,15 +23,18 @@ bool Solution(GraphNode* pStart, GraphNode* pEnd)
   while (!visitQueue.empty() && !found) 
   {
     GraphNode* currentNode = visitQueue.front();
+    
+    currentNode->visited = true;
     visitQueue.pop();
 
     for (int i = 0; i < currentNode->neighbors.size(); i++) {
-      std::cout << "i: " << i << std::endl;
+      if (!currentNode->neighbors[i]->visited) {
+        visitQueue.push(currentNode->neighbors[i]);
+      }      
       if (currentNode->neighbors[i] == pEnd) {
         found = true;
         break;
       }
-      visitQueue.push(currentNode->neighbors[i]);
     }
   }
   return found;
@@ -40,21 +44,32 @@ int main(int argc, char* argv[])
 {
   int status = 0;
 
-  GraphNode first, second, third, fourth;
+  std::vector<GraphNode*> nodes;
 
-  first.value = 1;
-  second.value = 2;
-  third.value = 3;
+  for (int i = 0; i < 6; i++) {
+    std::cout << "Making node: " << i << std::endl;
+    GraphNode* tempNode = new GraphNode();
+    tempNode->value = i+1;
+    nodes.push_back(tempNode);
+  }
 
-  std::vector<GraphNode*> firstNeighbors = {&second, &third};
-  std::vector<GraphNode*> secondNeighbors = {&first};
-  std::vector<GraphNode*> thirdNeighbors = {&first, &second};
+  std::vector<GraphNode*> firstNeighbors = {nodes[1]};
+  std::vector<GraphNode*> secondNeighbors = {nodes[2], nodes[3]};
+  std::vector<GraphNode*> thirdNeighbors = {nodes[4]};
+  std::vector<GraphNode*> fourthNeighbors = {nodes[4]};
+  std::vector<GraphNode*> sixthNeighbors = {nodes[0], nodes[4]};
 
-  first.neighbors = firstNeighbors;
-  second.neighbors = secondNeighbors;
-  third.neighbors = thirdNeighbors;
+  nodes[0]->neighbors = firstNeighbors;
+  nodes[1]->neighbors = secondNeighbors;
+  nodes[2]->neighbors = thirdNeighbors;
+  nodes[3]->neighbors = fourthNeighbors;
+  nodes[5]->neighbors = sixthNeighbors;
 
-  std::cout<<"Path exists? "<<Solution(&second, &fourth)<<std::endl;
+  int start = 6;
+  int end = 1;
+
+  std::cout << "Start node: "<<start<<" End node: "<<end<<" Connected: "<<
+    Solution(nodes[start-1], nodes[end-1])<<std::endl;
 
   return status;
 }
