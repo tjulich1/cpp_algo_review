@@ -1,17 +1,7 @@
 #include <vector>
 #include <iostream> 
 
-struct TreeNode 
-{
-  int value;
-  TreeNode* left;
-  TreeNode* right;
-  TreeNode(int pValue, TreeNode* pLeft, TreeNode* pRight) {
-    value = pValue;
-    left = pLeft;
-    right = pRight;
-  }
-};
+#include "../structures/tree_node.hpp"
 
 void Traverse(TreeNode* root) 
 {
@@ -32,48 +22,43 @@ void Traverse(TreeNode* root)
   {
     Traverse(root->right);
   }
-
 }
 
 TreeNode* BuildTree(std::vector<int> &values) 
 {
   int size = values.size();
-  TreeNode* root = new TreeNode(-1, nullptr, nullptr);
+  TreeNode* root;
   switch(size) {
     case 0: 
     {
+      root = nullptr;
       break;
     }
     case 1:
     {
-      root->value = values[0];
+      root = new TreeNode(values[0]);
       break;
     }
     case 2:
     {
-      root->value = values[1];
       TreeNode* left = new TreeNode(values[0], nullptr, nullptr);
-      root->left = left;
+      root = new TreeNode(values[1], left, nullptr);
       break;
     }
     case 3:
     {
-      root->value = values[1];
       TreeNode* right = new TreeNode(values[2], nullptr, nullptr);
       TreeNode* left = new TreeNode(values[0], nullptr, nullptr);      
-      root->left = left;
-      root->right = right;
+      root = new TreeNode(values[1], left, right);
       break;
     }
     default:
     {
-      root->value = values[size/2];
       std::vector<int> leftValues(values.begin(), values.begin() + size/2);
       std::vector<int> rightValues(values.begin() + (size/2) + 1, values.end());
       TreeNode* left = BuildTree(leftValues);
       TreeNode* right = BuildTree(rightValues);
-      root->left = left;
-      root->right = right;
+      root = new TreeNode(values[size/2], left, right);
       break;
     }
   }

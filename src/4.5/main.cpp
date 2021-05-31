@@ -9,49 +9,59 @@
   i.e. all values to the left of the current node are smaller, and all 
   values to the right of the current node are larger.
 */
-bool Validate(TreeNode* root) 
+bool Validate(TreeNode* root, int min, int max) 
 {
   bool valid = true;
 
-  if ((root->left && root->left->value > root->value) ||
-    (valid && root->right && root->right->value < root->value))
+  // Check that the current node is above the min.
+  if (min != NULL && root->value <= min)
   {
     valid = false;
-  } 
-  else 
-  {
-    if (root->left) 
-    {
-      valid = Validate(root->left);
-    }
-    if (root->right)
-    {
-      valid = valid && Validate(root->right);
-    }
   }
+  
+  // Check that the current node is below the max.
+  if (max != NULL && root->value > max)
+  {
+    valid = false;
+  }
+
+  // Validate the left branch of the tree.
+  if (valid && root->left) 
+  {
+    valid = Validate(root->left, min, root->value);
+  }
+
+  // Validate the right branch of the tree.
+  if (valid && root->right)
+  {
+    valid = Validate(root->right, root->value, max);
+  }
+
   return valid;
 }
 
 int main(int argc, char* argv[]) 
 {
-    TreeNode* lr = new TreeNode(3);   
+    TreeNode* lr = new TreeNode(4);   
     TreeNode* ll = new TreeNode(1);
     TreeNode* l = new TreeNode(2, ll, lr);
 
-    TreeNode* rl = new TreeNode(5);
-    TreeNode* rr = new TreeNode(7);
-    TreeNode* r = new TreeNode(6, rl, rr);
+    // TreeNode* rl = new TreeNode(5);
+    // TreeNode* rr = new TreeNode(7);
+    // TreeNode* r = new TreeNode(6, rl, rr);
 
-    TreeNode* root = new TreeNode(4, r, l);
+    TreeNode* root = new TreeNode(5, l, nullptr);
 
-    std::cout<<"Valid tree? "<<Validate(root)<<std::endl;
+    std::cout<<"Valid tree? "<<Validate(root, NULL, NULL)<<std::endl;
 
     delete lr;
     delete ll;
     delete l;
-    delete rl;
-    delete rr;
-    delete r;
+
+    // delete rl;
+    // delete rr;
+    // delete r;
+    
     delete root;
 
     return 0;
